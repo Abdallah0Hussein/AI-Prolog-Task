@@ -1,5 +1,28 @@
 :- consult('data.pl').
 
+% _____________________ Task 5 ___________________________________________________
+% Calculate the price of a given order given Customer Name and order id
+
+calcPriceOfOrder(CustomerName, OrderID, TotalPrice) :-
+    % Retrieve the customer ID based on the customer name
+    customer(CustomerID, CustomerName),
+    % Retrieve the items as a list in the specified order for the given customer
+    order(CustomerID, OrderID, Items),
+    % Call calcPriceOfItems to compute the total price
+    calcPriceOfItems(Items, 0, TotalPrice),
+    % Cut operator to stop backtracking, as we only need one solution
+    !.
+% Base case: When there are no more items, the accumulated total price is the final total price
+calcPriceOfItems([],Accumulator, Accumulator).
+
+
+calcPriceOfItems([Item|RestItems], Accumulator, TotalPrice):-
+    % Retrieve the price of the current item
+    item(Item, _, Price),
+    % Update the accumulator by adding the price of the current item
+    NewAccumulator is Accumulator + Price,
+
+    calcPriceOfItems(RestItems, NewAccumulator, TotalPrice). % Recursively accumulate the total price.
 
 % _____________________ Task 6 ___________________________________________________
 % Given the item name or company name, determine whether we need to boycott or not.
