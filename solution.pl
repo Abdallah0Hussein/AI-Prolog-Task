@@ -29,8 +29,7 @@ calcPriceOfItems([Item|RestItems], Accumulator, TotalPrice):-
 
 isBoycott(ItemOrCompany) :-
     item(ItemOrCompany, Company, _),
-    isBoycott(Company),
-    % Cut operator to prevent conutinuing
+    boycott_company(Company, _),
     !.
 
 isBoycott(ItemOrCompany) :-
@@ -49,3 +48,24 @@ whyToBoycott(ItemOrCompany, Justification) :-
     item(ItemOrCompany, Company, _),
     % Check if the company is in the boycott_company facts.
     boycott_company(Company, Justification).
+
+% _____________________ Task 8 ___________________________________________________
+% Given an username and order ID, remove all the boycott items from this order.
+
+removeBoycottItemsFromAnOrder(CustomerName, OrderID, NewList) :-
+    customer(CustomerID, CustomerName),
+    order(CustomerID, OrderID, Items),
+    removeBoycottItems(Items, [], NewList),
+    !.
+
+removeBoycottItems([], Acc, Acc).
+
+% If the current item is boycotted, skip it and continue checking the rest of the list
+removeBoycottItems([Item|RestItems], Acc, NewList):-
+    isBoycott(Item),
+    removeBoycottItems(RestItems, Acc, NewList).
+
+% If the current item is not boycotted, add it to the accumulator and continue checking the rest of the list
+removeBoycottItems([Item|RestItems], Acc, NewList):-
+    \+ isBoycott(Item),
+    removeBoycottItems(RestItems, [Item|Acc], NewList).
