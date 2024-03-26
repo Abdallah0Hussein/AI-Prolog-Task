@@ -1,4 +1,8 @@
 :- consult('data.pl').
+% Make it dynamic, as the compiled code results in static predicates (cannot be modified at runtime).
+:- dynamic (item/3).
+:- dynamic (alternative/2).
+:- dynamic (boycott_company/2).
 
 % _____________________ Task 5 ___________________________________________________
 % Calculate the price of a given order given Customer Name and order id
@@ -69,3 +73,33 @@ removeBoycottItems([Item|RestItems], Acc, NewList):-
 removeBoycottItems([Item|RestItems], Acc, NewList):-
     \+ isBoycott(Item),
     removeBoycottItems(RestItems, [Item|Acc], NewList).
+
+% _____________________ Task 12 ___________________________________________________
+% Insert/Remove (1)item, (2)alternative and (3)new boycott company to/from the knowledge base.
+
+add_item(ItemName, Company, Price) :-
+    % if not exists, add it
+    \+ item(ItemName, Company, Price),
+    assert(item(ItemName, Company, Price)).
+
+remove_item(ItemName, Company, Price) :-
+    % if exists, retract it (remove it)
+    retract(item(ItemName, Company, Price)).
+
+add_alternative(ItemName, AlternativeItem) :-
+    % if not exists, add it
+    \+ alternative(ItemName, AlternativeItem),
+    assert(alternative(ItemName, AlternativeItem)).
+
+remove_alternative(ItemName, AlternativeItem) :-
+    % if exists, retract it (remove it)
+    retract(alternative(ItemName, AlternativeItem)).
+
+add_boycott_company(CompanyName, Justification) :-
+    % if not exists, add it
+    \+ boycott_company(CompanyName, _),
+    assert(boycott_company(CompanyName, Justification)).
+
+remove_boycott_company(CompanyName) :-
+    % if exists, retract it (remove it)
+    retract(boycott_company(CompanyName, _)).
