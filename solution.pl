@@ -4,6 +4,27 @@
 :- dynamic (alternative/2).
 :- dynamic (boycott_company/2).
 
+% _____________________ Task 1  ___________________________________________________
+
+% Check if X is a member of List T
+ismember(X, [_|T]) :-
+    ismember(X, T).
+ismember(X, [X|_]).
+
+
+list_orders(CustomerName, X) :-
+    customer(CustID, CustomerName),
+    list_orders(CustID, [], X).
+
+list_orders(CustID, Acc, [H|Orders]) :-
+    order(CustID, OrderID, Items),
+    \+ ismember(order(CustID, OrderID, Items), Acc),
+    H = order(CustID, OrderID, Items),
+    list_orders(CustID, [H|Acc], Orders), !.
+
+list_orders(_, _, []).
+
+
 % _____________________ Task 5 ___________________________________________________
 % Calculate the price of a given order given Customer Name and order id
 
