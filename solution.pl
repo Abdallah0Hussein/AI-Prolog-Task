@@ -42,11 +42,11 @@ getItemsInOrderById(CustName, OrderID, X) :-
     order(CustID, OrderID, X).
 
 % _____________________ Task 4 ___________________________________________________
-len2([_|T], N) :-
-    len2(T, N1),
+len([_|T], N) :-
+    len(T, N1),
     N is N1 + 1.
 
-len2([], 0).
+len([], 0).
 
 getNumOfItems(CustName, OrderID, Count) :-
     customer(CustID, CustName),
@@ -142,6 +142,33 @@ replaceBoycottItems([Item|RestItems], Acc, NewList):-
     isBoycott(Item),
     alternative(Item, Alternative),
     replaceBoycottItems(RestItems,[Alternative|Acc], NewList).
+
+
+
+% _____________________ Task 10 ___________________________________________________
+
+% use task9 to get alternativeItems for Items order 
+calcPriceAfterReplacingBoycottItemsFromAnOrder(CustomerUsername,OrderID,NewList,TotalPrice):-
+    replaceBoycottItemsFromAnOrder(CustomerUsername, OrderID, NewList),
+    getTotalPrice(NewList, 0 ,TotalPrice).
+
+% base case
+getTotalPrice([], Acc, Acc).
+
+getTotalPrice([Item| NewList], Acc, TotalPrice):-
+    item(Item, _, Price),
+    NewAcc is Price + Acc,
+    getTotalPrice(NewList, NewAcc, TotalPrice).
+% _____________________ Task 11 ___________________________________________________
+
+getTheDifferenceInPriceBetweenItemAndAlternative(ItemName, AlternativeItem, DiffPrice):-
+    alternative(ItemName,AlternativeItem), 
+    % get price for item that is given 
+    item(ItemName,_,  Price1), 
+    % get price for Alternative Item that is given 
+    item(AlternativeItem,_, Price2),
+    DiffPrice is Price1 - Price2,!.
+
 
 % _____________________ Task 12 ___________________________________________________
 % Insert/Remove (1)item, (2)alternative and (3)new boycott company to/from the knowledge base.
