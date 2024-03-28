@@ -24,6 +24,17 @@ list_orders(CustID, Acc, [H|Orders]) :-
 
 list_orders(_, _, []).
 
+% _____________________ Task 2 ___________________________________________________
+
+countOrdersOfCustomer(CustUsername,Count):-
+% get all orders that match with this CustomerUsername
+    list_orders(CustUsername, X),
+    getLengthOfListOrders(X,0, Count).
+
+getLengthOfListOrders([],Count, Count).
+getLengthOfListOrders([_|Orders], Counter, Count):-
+   NewCounter is Counter + 1,
+   getLengthOfListOrders(Orders, NewCounter, Count).
 
 % _____________________ Task 3 ___________________________________________________
 getItemsInOrderById(CustName, OrderID, X) :-
