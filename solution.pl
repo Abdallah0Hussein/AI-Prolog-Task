@@ -25,6 +25,23 @@ list_orders(CustID, Acc, [H|Orders]) :-
 list_orders(_, _, []).
 
 
+% _____________________ Task 3 ___________________________________________________
+getItemsInOrderById(CustName, OrderID, X) :-
+    customer(CustID, CustName),
+    order(CustID, OrderID, X).
+
+% _____________________ Task 4 ___________________________________________________
+len2([_|T], N) :-
+    len2(T, N1),
+    N is N1 + 1.
+
+len2([], 0).
+
+getNumOfItems(CustName, OrderID, Count) :-
+    customer(CustID, CustName),
+    order(CustID, OrderID, Items),
+    len(Items, Count).
+
 % _____________________ Task 5 ___________________________________________________
 % Calculate the price of a given order given Customer Name and order id
 
