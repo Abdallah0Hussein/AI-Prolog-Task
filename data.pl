@@ -10,7 +10,6 @@ customer(109, aisha11).
 
 order(101,1,[puvana, orange_1k, feba_dishwash_1L, snickers, ahlawy]).
 order(101,2,[loreal_hair_serum_100ml, sunsilk_shampoo_350ml]).
-order(101,3,[ddddddloreal_hair_serum_100ml, sunsilk_shampoo_350ml]).
 order(102,1,[neslte_yogurt, snickers, dasani, flour_1k]).
 order(102,2,[ariel_4k, biskrem, galaxy, cheese]).
 order(102,3,[duru_soap_x4, dasani, nedo_288g, pril_1L]).
