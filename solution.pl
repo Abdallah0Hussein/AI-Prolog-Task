@@ -39,7 +39,8 @@ getLengthOfListOrders([_|Orders], Counter, Count):-
 % _____________________ Task 3 ___________________________________________________
 getItemsInOrderById(CustName, OrderID, X) :-
     customer(CustID, CustName),
-    order(CustID, OrderID, X).
+    order(CustID, OrderID, X),
+    !.
 
 % _____________________ Task 4 ___________________________________________________
 len([_|T], N) :-
@@ -51,31 +52,28 @@ len([], 0).
 getNumOfItems(CustName, OrderID, Count) :-
     customer(CustID, CustName),
     order(CustID, OrderID, Items),
-    len(Items, Count).
+    len(Items, Count),
+    !.
 
 % _____________________ Task 5 ___________________________________________________
 % Calculate the price of a given order given Customer Name and order id
 
 calcPriceOfOrder(CustomerName, OrderID, TotalPrice) :-
-    % Retrieve the customer ID based on the customer name
+    % get the customer ID based on the customer name
     customer(CustomerID, CustomerName),
-    % Retrieve the items as a list in the specified order for the given customer
+    % get the items as a list
     order(CustomerID, OrderID, Items),
-    % Call calcPriceOfItems to compute the total price
-    calcPriceOfItems(Items, 0, TotalPrice),
+    getTotalPrice(Items, 0, TotalPrice),
     % Cut operator to stop backtracking, as we only need one solution
     !.
+
 % Base case: When there are no more items, the accumulated total price is the final total price
-calcPriceOfItems([],Accumulator, Accumulator).
+getTotalPrice([], Acc, Acc).
 
-
-calcPriceOfItems([Item|RestItems], Accumulator, TotalPrice):-
-    % Retrieve the price of the current item
+getTotalPrice([Item| Rest], Acc, TotalPrice):-
     item(Item, _, Price),
-    % Update the accumulator by adding the price of the current item
-    NewAccumulator is Accumulator + Price,
-
-    calcPriceOfItems(RestItems, NewAccumulator, TotalPrice). % Recursively accumulate the total price.
+    NewAcc is Price + Acc,
+    getTotalPrice(Rest, NewAcc, TotalPrice).
 
 % _____________________ Task 6 ___________________________________________________
 % Given the item name or company name, determine whether we need to boycott or not.
@@ -92,14 +90,13 @@ isBoycott(ItemOrCompany) :-
 % Given the company name or an item name, find the justification why you need to boycott this company/item.
 
 whyToBoycott(ItemOrCompany, Justification) :-
-    % Check if the given item or company directly appears in the boycott_company facts.
     % if found, return corresponding justification.
     boycott_company(ItemOrCompany, Justification),
     !.
 whyToBoycott(ItemOrCompany, Justification) :-
     % get the company associated with the given item.
     item(ItemOrCompany, Company, _),
-    % Check if the company is in the boycott_company facts.
+    % check if the company of the item is in the boycott_company facts.
     boycott_company(Company, Justification).
 
 % _____________________ Task 8 ___________________________________________________
@@ -143,29 +140,26 @@ replaceBoycottItems([Item|RestItems], Acc, NewList):-
     alternative(Item, Alternative),
     replaceBoycottItems(RestItems,[Alternative|Acc], NewList).
 
+% replaceBoycottItems([Item|RestItems], Acc, NewList):-
+  %  isBoycott(Item),
+   % \+ alternative(Item, _),
+    % replaceBoycottItems(RestItems,[Item|Acc], NewList).
 
 
 % _____________________ Task 10 ___________________________________________________
 
-% use task9 to get alternativeItems for Items order 
+% use task 9&5 to replace alternatives & get Total Price
 calcPriceAfterReplacingBoycottItemsFromAnOrder(CustomerUsername,OrderID,NewList,TotalPrice):-
     replaceBoycottItemsFromAnOrder(CustomerUsername, OrderID, NewList),
     getTotalPrice(NewList, 0 ,TotalPrice).
 
-% base case
-getTotalPrice([], Acc, Acc).
-
-getTotalPrice([Item| NewList], Acc, TotalPrice):-
-    item(Item, _, Price),
-    NewAcc is Price + Acc,
-    getTotalPrice(NewList, NewAcc, TotalPrice).
 % _____________________ Task 11 ___________________________________________________
 
 getTheDifferenceInPriceBetweenItemAndAlternative(ItemName, AlternativeItem, DiffPrice):-
-    alternative(ItemName,AlternativeItem), 
-    % get price for item that is given 
-    item(ItemName,_,  Price1), 
-    % get price for Alternative Item that is given 
+    alternative(ItemName,AlternativeItem),
+    % get price for item that is given
+    item(ItemName,_,  Price1),
+    % get price for Alternative Item that is given
     item(AlternativeItem,_, Price2),
     DiffPrice is Price1 - Price2,!.
 
@@ -183,19 +177,15 @@ remove_item(ItemName, Company, Price) :-
     retract(item(ItemName, Company, Price)).
 
 add_alternative(ItemName, AlternativeItem) :-
-    % if not exists, add it
     \+ alternative(ItemName, AlternativeItem),
     assert(alternative(ItemName, AlternativeItem)).
 
 remove_alternative(ItemName, AlternativeItem) :-
-    % if exists, retract it (remove it)
     retract(alternative(ItemName, AlternativeItem)).
 
 add_boycott_company(CompanyName, Justification) :-
-    % if not exists, add it
     \+ boycott_company(CompanyName, _),
     assert(boycott_company(CompanyName, Justification)).
 
 remove_boycott_company(CompanyName) :-
-    % if exists, retract it (remove it)
     retract(boycott_company(CompanyName, _)).
