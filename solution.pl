@@ -95,6 +95,26 @@ removeBoycottItems([Item|RestItems], Acc, NewList):-
     \+ isBoycott(Item),
     removeBoycottItems(RestItems, [Item|Acc], NewList).
 
+% _____________________ Task 9 ___________________________________________________
+% Given an username and order ID, update the order such that all boycott items are replaced by an alternative (if exists).
+
+replaceBoycottItemsFromAnOrder(CustomerName, OrderID, NewList) :-
+    customer(CustomerID, CustomerName),
+    order(CustomerID, OrderID, Items),
+    replaceBoycottItems(Items, [], NewList),
+    !.
+
+replaceBoycottItems([], Acc, Acc).
+
+replaceBoycottItems([Item|RestItems], Acc, NewList):-
+    \+ isBoycott(Item),
+    replaceBoycottItems(RestItems, [Item|Acc], NewList).
+
+replaceBoycottItems([Item|RestItems], Acc, NewList):-
+    isBoycott(Item),
+    alternative(Item, Alternative),
+    replaceBoycottItems(RestItems,[Alternative|Acc], NewList).
+
 % _____________________ Task 12 ___________________________________________________
 % Insert/Remove (1)item, (2)alternative and (3)new boycott company to/from the knowledge base.
 
